@@ -1,11 +1,34 @@
 import React, { useState } from 'react';
 import { List, Button, Flex } from 'antd';
-import { CaretRightOutlined } from '@ant-design/icons';
+import { CaretRightOutlined, CloseOutlined } from '@ant-design/icons';
 import { open } from '@tauri-apps/api/dialog'
 import { invoke } from '@tauri-apps/api/tauri';
+import { readTextFile } from '@tauri-apps/api/fs';
 
 function App() {
     const [directories, setDirectories] = useState([]);
+
+    // 读取临时文件，取出PROJECT-PATH
+    const readTempFileFromRust = async () => {
+        try {
+            const fileContent = await invoke('read_tmp_file');
+            console.log(fileContent);
+            // 处理fileContent
+            if (fileContent) {
+                const lines = fileContent.split('\n');
+                for (const line of lines) {
+                    if (line.startsWith('PROJECT-PATH=')) {
+                        console.log('PROJECT-PATH:', line.split('=')[1])
+                        const result = await readPackageJson(line.split('=')[1])
+                        console.log('读取文件', result)
+                        setDirectories(result);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error reading temp file:', error);
+        }
+    }
 
     const selectFolder = async () => {
         try {
@@ -57,6 +80,10 @@ function App() {
 
     // Call listDirectories with the path you want to list on component mount
 
+    React.useEffect(() => {
+        readTempFileFromRust();
+    }, [])
+
     return (
         <div style={{ padding: '12px 16px' }}>
             <Flex gap={8} style={{ marginBottom: '12px' }}>
@@ -87,11 +114,19 @@ function App() {
                     return (
                         <List.Item>
                             <List.Item.Meta title={item.name} description={item.description || '暂无描述'}/>
-                            <Button icon={<CaretRightOutlined style={{ fontSize: '20px', color: '#389e0d' }}/>}
+                            <Button
+                                style={{ marginRight: '6px' }}
+                                icon={<CaretRightOutlined
+                                    style={{ fontSize: '20px', color: '#389e0d' }}/>}
+                                onClick={() => {
+                                    console.log('haha', item.path, item.scripts.start)
+                                    runCommand(item.path, item.scripts.start)
+                                }}/>
+                            <Button icon={<CloseOutlined style={{ fontSize: '16px', color: '#ff4d4f' }}/>}
                                     onClick={() => {
-                                        console.log('haha', item.path, item.scripts.start)
-                                        runCommand(item.path, item.scripts.start)
-                                    }}/>
+                                        invoke('disable_proxy');
+                                    }}
+                            ></Button>
                         </List.Item>
                     )
                 }}

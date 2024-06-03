@@ -11,8 +11,10 @@ edition = "2021"
 tauri-build = { version = "1", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = [ "system-tray", "api-all", "notification"] }
+tauri = { version = "1", features = [ "cli", "system-tray", "api-all", "notification"] }
 serde = { version = "1", features = ["derive"] }
+clap = "4.0.0"
+notify = "6.1.1"
 serde_json = "1"
 
 [features]

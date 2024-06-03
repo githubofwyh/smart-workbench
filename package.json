@@ -20,5 +20,6 @@
     "@tauri-apps/cli": "^1",
     "@vitejs/plugin-react": "^4.2.1",
     "vite": "^5.0.0"
-  }
+  },
+  "repository": "https://github.com/githubofwyh/smart-workbench.git"
 }

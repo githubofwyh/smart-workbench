@@ -10,6 +10,19 @@
     "version": "0.0.0"
   },
   "tauri": {
+    "cli": {
+      "description": "",
+      "longDescription": "",
+      "beforeHelp": "",
+      "afterHelp": "",
+      "args": [
+        {
+          "name": "type",
+          "short": "t",
+          "multipleOccurrences": true
+        }
+      ]
+    },
     "systemTray": {
       "iconPath": "icons/128x128.png",
       "iconAsTemplate": true
